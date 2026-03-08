@@ -309,7 +309,6 @@ height:120px;
 <div id="msg-content"></div>
 
 
-
 <div style="margin-top:40px;color:#ff4b2b;font-size:1.5rem;">∞</div>
 </div>
 
@@ -360,15 +359,6 @@ document.getElementById("final-card").style.display="block";
 },600)
 }
 
-function readMessage(){
-if(!currentMessage)return;
-const speech=new SpeechSynthesisUtterance(currentMessage);
-speech.lang="pt-BR";
-speech.rate=0.88;
-speech.pitch=1.25;
-speechSynthesis.cancel();
-speechSynthesis.speak(speech);
-}
 
 function startCelebration(){
 
