@@ -34,10 +34,10 @@ height:70vh;
 background:
 linear-gradient(rgba(190,0,57,0.5),rgba(103,11,139,0.5)),
 url('https://media.istockphoto.com/id/2193289409/pt/vetorial/international-womens-day-2025-background.jpg?s=612x612&w=0&k=20&c=SU9VChR84hzcswCP3-RLHfvUlf5nKFVLVi4gmz4663o=');
-background-size: cover; /* Ajusta para cobrir todo o espaço */
-  background-repeat: no-repeat; /* Evita repetição */
-  background-position: center; /* Centraliza a imagem */
-  background-attachment: fixed;
+background-size: cover;
+background-repeat: no-repeat;
+background-position: center;
+background-attachment: fixed;
 
 animation: heroWaves 12s ease-in-out infinite;
 
@@ -64,30 +64,14 @@ margin-top:10px;
 color:#ffd1dc;
 }
 
-/* ANIMAÇÃO DE ONDAS DO FUNDO */
+/* ANIMAÇÃO DE ONDAS */
 
 @keyframes heroWaves{
-
-0%{
-background-position:50% 50%;
-}
-
-25%{
-background-position:52% 48%;
-}
-
-50%{
-background-position:50% 52%;
-}
-
-75%{
-background-position:48% 50%;
-}
-
-100%{
-background-position:50% 50%;
-}
-
+0%{background-position:50% 50%;}
+25%{background-position:52% 48%;}
+50%{background-position:50% 52%;}
+75%{background-position:48% 50%;}
+100%{background-position:50% 50%;}
 }
 
 /* CONTAINER */
@@ -138,8 +122,6 @@ border-color:#ff6fa5;
 box-shadow:0 0 15px rgba(255,105,180,0.2);
 }
 
-/* BOTÃO */
-
 .btn-celebrate{
 background:var(--female-gradient);
 color:white;
@@ -167,9 +149,51 @@ margin-top:50px;
 animation:fadeInUp 0.8s ease;
 }
 
+/* ENVELOPE ADICIONADO */
+
+.envelope{
+width:220px;
+height:140px;
+background:#ff9a9e;
+margin:40px auto;
+position:relative;
+cursor:pointer;
+border-radius:6px;
+box-shadow:0 10px 20px rgba(0,0,0,0.15);
+}
+
+.envelope::before{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#ff6fa5;
+clip-path:polygon(0 0,50% 60%,100% 0);
+transition:0.6s;
+}
+
+.envelope.open::before{
+transform:rotateX(180deg);
+transform-origin:top;
+}
+
+.envelope-text{
+position:absolute;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-weight:600;
+}
+
 /* CARTÃO */
 
 .card-canvas{
+display:none;
 background:linear-gradient(180deg,#ffffff,#fff6f9);
 padding:80px 60px;
 border-radius:40px;
@@ -178,8 +202,6 @@ overflow:hidden;
 box-shadow:0 30px 60px rgba(255,105,180,0.18);
 border:1px solid rgba(255,182,193,0.35);
 }
-
-/* FLORES */
 
 .card-canvas::before{
 content:'🌸';
@@ -208,13 +230,8 @@ margin-bottom:30px;
 font-style:italic;
 }
 
-.card-title::before{
-content:"🌷 ";
-}
-
-.card-title::after{
-content:" 🌸";
-}
+.card-title::before{content:"🌷 ";}
+.card-title::after{content:" 🌸";}
 
 .card-text{
 font-size:1.8rem;
@@ -237,11 +254,6 @@ text-decoration:none;
 border:none;
 cursor:pointer;
 font-size:1rem;
-transition:0.3s;
-}
-
-.btn-dl:hover{
-background:#d63384;
 }
 
 @keyframes fadeInUp{
@@ -253,12 +265,6 @@ footer{
 padding:50px;
 text-align:center;
 color:#b2bec3;
-}
-
-@media (max-width:768px){
-.card-canvas{padding:40px 20px;}
-.card-title{font-size:2.2rem;}
-.card-text{font-size:1.3rem;}
 }
 
 </style>
@@ -285,8 +291,17 @@ color:#b2bec3;
 
 <div id="result-area">
 
+<div class="envelope" id="envelope" onclick="openEnvelope()">
+<div class="envelope-text">💌 Abrir carta</div>
+</div>
+
 <div class="card-canvas" id="final-card">
 <div id="msg-content"></div>
+
+<div style="margin-top:30px;text-align:center;">
+<button onclick="readMessage()" class="btn-dl">🔊 Ler Mensagem</button>
+</div>
+
 <div style="margin-top:40px;color:#ff4b2b;font-size:1.5rem;">∞</div>
 </div>
 
@@ -303,6 +318,78 @@ color:#b2bec3;
 </footer>
 
 <script>
+
+let currentMessage="";
+
+const cardColors = [
+
+"linear-gradient(180deg,#ffffff,#fff6f9)",
+"linear-gradient(180deg,#ffe4ec,#ffffff)",
+"linear-gradient(180deg,#fff0f5,#ffe4ec)",
+"linear-gradient(180deg,#fce4ff,#ffffff)",
+"linear-gradient(180deg,#ffe0f0,#fff)",
+"linear-gradient(180deg,#ffd6e8,#ffffff)",
+"linear-gradient(180deg,#f8e8ff,#ffffff)"
+
+];
+
+/* FUNÇÃO ENVELOPE */
+
+function openEnvelope(){
+
+document.getElementById("envelope").classList.add("open");
+
+setTimeout(()=>{
+document.getElementById("envelope").style.display="none";
+document.getElementById("final-card").style.display="block";
+},600)
+
+}
+
+/* FUNÇÃO VOZ */
+
+function readMessage(){
+
+if(!currentMessage)return;
+
+const speech=new SpeechSynthesisUtterance(currentMessage);
+
+/* configurações de leitura mais suave */
+speech.lang="pt-BR";
+speech.rate=0.88;      // velocidade mais suave
+speech.pitch=1.25;     // tom um pouco mais feminino
+speech.volume=1;
+
+/* tentar escolher voz feminina */
+const voices = speechSynthesis.getVoices();
+
+for(let i=0;i<voices.length;i++){
+
+const name = voices[i].name.toLowerCase();
+
+if(
+voices[i].lang.includes("pt") &&
+(
+name.includes("female") ||
+name.includes("woman") ||
+name.includes("maria") ||
+name.includes("luciana") ||
+name.includes("brasil")
+)
+){
+speech.voice = voices[i];
+break;
+}
+
+}
+
+/* melhora pausa em parágrafos */
+speech.text = currentMessage.replace(/\n\n/g,"... ");
+
+speechSynthesis.cancel();
+speechSynthesis.speak(speech);
+
+}
 
 function startCelebration(){
 
@@ -366,13 +453,9 @@ m="Mãe, faltam palavras para descrever a imensidão do que você representa. Al
 else{
 
 const variations=[
-
-`Feliz Dia da Mulher, ${rawName}! Que sua essência continue iluminando os caminhos por onde você passar. Você é força e delicadeza em perfeito equilíbrio.`,
-
-`${rawName}, celebre hoje a mulher maravilhosa que você é! Que nunca te falte motivos para sorrir e força para conquistar cada um dos seus sonhos.`,
-
-`Para ${rawName}: O mundo fica mais bonito com sua presença. Que este 8 de março seja apenas o começo de um ano repleto de respeito e conquistas!`
-
+`Feliz Dia da Mulher, ${rawName}!`,
+`${rawName}, celebre hoje a mulher maravilhosa que você é!`,
+`Para ${rawName}: O mundo fica mais bonito com sua presença.`
 ];
 
 t=`Feliz seu Dia, ${rawName}`;
@@ -380,16 +463,14 @@ m=variations[Math.floor(Math.random()*variations.length)];
 
 }
 
+currentMessage=m;
+
+const randomColor = cardColors[Math.floor(Math.random()*cardColors.length)];
+document.getElementById("final-card").style.background = randomColor;
+
 container.innerHTML=`<div class="card-title">${t}</div><div class="card-text">${m.replace(/\n/g,'<br>')}</div>`;
 
 document.getElementById('result-area').style.display='block';
-
-setTimeout(()=>{
-window.scrollTo({
-top:document.getElementById('result-area').offsetTop-20,
-behavior:'smooth'
-});
-},100);
 
 }
 
