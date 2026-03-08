@@ -64,8 +64,6 @@ margin-top:10px;
 color:#ffd1dc;
 }
 
-/* ANIMAÇÃO DE ONDAS */
-
 @keyframes heroWaves{
 0%{background-position:50% 50%;}
 25%{background-position:52% 48%;}
@@ -73,8 +71,6 @@ color:#ffd1dc;
 75%{background-position:48% 50%;}
 100%{background-position:50% 50%;}
 }
-
-/* CONTAINER */
 
 .main-content{
 max-width:1000px;
@@ -136,20 +132,13 @@ transition:0.4s;
 box-shadow:0 10px 20px rgba(255,105,180,0.35);
 }
 
-.btn-celebrate:hover{
-transform:translateY(-3px);
-box-shadow:0 15px 30px rgba(255,105,180,0.6);
-}
-
-/* RESULTADO */
-
 #result-area{
 display:none;
 margin-top:50px;
 animation:fadeInUp 0.8s ease;
 }
 
-/* ENVELOPE ADICIONADO */
+/* envelope */
 
 .envelope{
 width:220px;
@@ -190,8 +179,6 @@ color:white;
 font-weight:600;
 }
 
-/* CARTÃO */
-
 .card-canvas{
 display:none;
 background:linear-gradient(180deg,#ffffff,#fff6f9);
@@ -203,25 +190,6 @@ box-shadow:0 30px 60px rgba(255,105,180,0.18);
 border:1px solid rgba(255,182,193,0.35);
 }
 
-.card-canvas::before{
-content:'🌸';
-position:absolute;
-top:-40px;
-right:-10px;
-font-size:13rem;
-opacity:0.08;
-transform:rotate(15deg);
-}
-
-.card-canvas::after{
-content:'🌺 🌷 🌼';
-position:absolute;
-bottom:-10px;
-left:20px;
-font-size:5rem;
-opacity:0.15;
-}
-
 .card-title{
 font-family:'Playfair Display',serif;
 font-size:3.5rem;
@@ -229,9 +197,6 @@ color:#e84393;
 margin-bottom:30px;
 font-style:italic;
 }
-
-.card-title::before{content:"🌷 ";}
-.card-title::after{content:" 🌸";}
 
 .card-text{
 font-size:1.8rem;
@@ -250,15 +215,9 @@ background:#e84393;
 color:white;
 padding:15px 30px;
 border-radius:12px;
-text-decoration:none;
 border:none;
 cursor:pointer;
 font-size:1rem;
-}
-
-@keyframes fadeInUp{
-from{opacity:0;transform:translateY(40px);}
-to{opacity:1;transform:translateY(0);}
 }
 
 footer{
@@ -321,8 +280,7 @@ color:#b2bec3;
 
 let currentMessage="";
 
-const cardColors = [
-
+const cardColors=[
 "linear-gradient(180deg,#ffffff,#fff6f9)",
 "linear-gradient(180deg,#ffe4ec,#ffffff)",
 "linear-gradient(180deg,#fff0f5,#ffe4ec)",
@@ -330,65 +288,37 @@ const cardColors = [
 "linear-gradient(180deg,#ffe0f0,#fff)",
 "linear-gradient(180deg,#ffd6e8,#ffffff)",
 "linear-gradient(180deg,#f8e8ff,#ffffff)"
-
 ];
 
-/* FUNÇÃO ENVELOPE */
+function typeWriterEffect(element,text,speed=35){
+let i=0;
+element.innerHTML="";
+function typing(){
+if(i<text.length){
+element.innerHTML+=text.charAt(i)==="\n"?"<br>":text.charAt(i);
+i++;
+setTimeout(typing,speed);
+}
+}
+typing();
+}
 
 function openEnvelope(){
-
 document.getElementById("envelope").classList.add("open");
-
 setTimeout(()=>{
 document.getElementById("envelope").style.display="none";
 document.getElementById("final-card").style.display="block";
 },600)
-
 }
-
-/* FUNÇÃO VOZ */
 
 function readMessage(){
-
 if(!currentMessage)return;
-
 const speech=new SpeechSynthesisUtterance(currentMessage);
-
-/* configurações de leitura mais suave */
 speech.lang="pt-BR";
-speech.rate=0.88;      // velocidade mais suave
-speech.pitch=1.25;     // tom um pouco mais feminino
-speech.volume=1;
-
-/* tentar escolher voz feminina */
-const voices = speechSynthesis.getVoices();
-
-for(let i=0;i<voices.length;i++){
-
-const name = voices[i].name.toLowerCase();
-
-if(
-voices[i].lang.includes("pt") &&
-(
-name.includes("female") ||
-name.includes("woman") ||
-name.includes("maria") ||
-name.includes("luciana") ||
-name.includes("brasil")
-)
-){
-speech.voice = voices[i];
-break;
-}
-
-}
-
-/* melhora pausa em parágrafos */
-speech.text = currentMessage.replace(/\n\n/g,"... ");
-
+speech.rate=0.88;
+speech.pitch=1.25;
 speechSynthesis.cancel();
 speechSynthesis.speak(speech);
-
 }
 
 function startCelebration(){
@@ -401,19 +331,6 @@ const container=document.getElementById('msg-content');
 
 let t="";
 let m="";
-
-const count=200;
-const defaults={origin:{y:0.7},zIndex:999};
-
-function fire(particleRatio,opts){
-confetti(Object.assign({},defaults,opts,{
-particleCount:Math.floor(count*particleRatio)
-}));
-}
-
-fire(0.25,{spread:26,startVelocity:55,colors:['#ff6fa5','#ffffff']});
-fire(0.2,{spread:60,colors:['#ff9a9e','#ffd1dc']});
-fire(0.35,{spread:100,decay:0.91,scalar:0.8});
 
 if(name==="maria"){
 t="Para a Minha Vovó Maria";
@@ -465,10 +382,12 @@ m=variations[Math.floor(Math.random()*variations.length)];
 
 currentMessage=m;
 
-const randomColor = cardColors[Math.floor(Math.random()*cardColors.length)];
-document.getElementById("final-card").style.background = randomColor;
+const randomColor=cardColors[Math.floor(Math.random()*cardColors.length)];
+document.getElementById("final-card").style.background=randomColor;
 
-container.innerHTML=`<div class="card-title">${t}</div><div class="card-text">${m.replace(/\n/g,'<br>')}</div>`;
+container.innerHTML=`<div class="card-title">${t}</div><div class="card-text" id="typedMessage"></div>`;
+
+typeWriterEffect(document.getElementById("typedMessage"),m);
 
 document.getElementById('result-area').style.display='block';
 
@@ -478,17 +397,11 @@ function saveAsImage(){
 
 const card=document.getElementById('final-card');
 
-html2canvas(card,{
-scale:3,
-backgroundColor:"#ffffff",
-borderRadius:40
-}).then(canvas=>{
-
+html2canvas(card,{scale:3}).then(canvas=>{
 const link=document.createElement('a');
 link.download=`homenagem-${new Date().getTime()}.png`;
 link.href=canvas.toDataURL();
 link.click();
-
 });
 
 }
